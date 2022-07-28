@@ -1,0 +1,31 @@
+{
+  "name": "ai-widget",
+  "version": "0.0.1",
+  "description": "Web Widget to connect to the Rasa conversational chatbot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "js-build": "esbuild index.js --bundle  --outfile=dist/frontend-assets.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antoniofregoso/ai-widget.git"
+  },
+  "keywords": [
+    "rasa",
+    "chatbot",
+    "botwidget"
+  ],
+  "author": "Antonio Fregoso <yomero@antoniofregoso.com>",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/antoniofregoso/ai-widget/issues"
+  },
+  "homepage": "https://github.com/antoniofregoso/ai-widget#readme",
+  "devDependencies": {
+    "esbuild": "^0.14.49"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.5.1"
+  }
+}
