@@ -1,4 +1,5 @@
 import {io} from 'socket.io-client'
+import { Remarkable } from 'remarkable'
 
 class AiWidget  extends HTMLElement {
 
@@ -246,14 +247,13 @@ class AiWidget  extends HTMLElement {
         return uuid
     }
     openSocket(){
+        var md = new Remarkable()
         const botMesagges = this.botMesagges
         this.uuid = this.getSessionId()
-        console.log(this.uuid)
-        console.log(this.websocketUrl)
-        var socket = io(this.websocketUrl)
+        var socket = io(this.websocketUrl, { autoConnect: true})
         socket.on('connect',()=>{
             console.log('SOCKET: connected to the socket server', socket.connected, this.uuid) 
-            socket.emit('session_request', { session_id: '9b91ffa335d244b7978292ae9f17de2e' })
+            socket.emit('session_request', { session_id: this.uuid })
             if (this.initialPayload != '/'){
                 socket.emit('user_uttered', {
                   "session_id": this.uuid, 
@@ -271,6 +271,10 @@ class AiWidget  extends HTMLElement {
             console.log('SOCKET: connect_error ---->', error)
             this.setAttribute('online',false)
         })
+
+        socket.on('disconnect', (reason) => {
+            console.log(reason)
+          })
         
         socket.on('bot_uttered', (response) =>{
             if (response.text) {
@@ -397,9 +401,12 @@ class AiWidget  extends HTMLElement {
                 width: 100%;
                 height: auto;
             }
-            .messages-item li {
-                padding-left: 15px;
-                list-style-type: none;
+            .messages-item ul {
+                margin-left: 5px;
+                list-style-type: disc;
+            }
+            .messages-item ol {
+                margin-left: 5px;
             }
             .messages-item a:link {
                 font-style: italic;
