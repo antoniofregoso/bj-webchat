@@ -154,7 +154,7 @@ class AiWidget  extends HTMLElement {
     
     constructor() {
         super()
-        this.defaults = {isOpen:false, websocketUrl:"http://localhost:5005",initialPayload:"/",gradA:"#243A4B",gradB:"#386370",bgClient:"#386370",clientColor:"#FFFFFF",showTime:true, brand:'AI Widget', description:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',imputMessage:'Write a message', brandAvatar:'default'}
+        this.defaults = {isOpen:false, websocketUrl:"http://localhost:5005",initialPayload:"/",gradA:"#243A4B",gradB:"#386370",bgClient:"#386370",clientColor:"#FFFFFF",showTime:true, brand:'AI Widget', description:'Lorem ipsum dolor sit amet.',imputMessage:'Write a message', brandAvatar:'default'}
         this.online = false
         this.open=false
         this.uuid= false
