@@ -8,7 +8,7 @@ Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
 4. pt
 5. de
 
-
+## Configuration options
 |Attribute|Description|Default Value|
 |---------|-----------|-------------|
 |**data-is-open**|Start open widget: *1* for open.|close|
