@@ -23,3 +23,5 @@ Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
 |**data-slogan**|brand slogan.|Connect RASA with style.|
 |**data-brand-avatar**|Widget logo or avatar URL.|default|
 |**data-emoji**|*basic* or *complete* list of emojis.|basic|
+|**data-height**|Widget height on tablets, laptops or desktop devices in pixels.|450|
+|**data-width**|Widget width on tablets, laptops or desktop devices in pixels.|350|

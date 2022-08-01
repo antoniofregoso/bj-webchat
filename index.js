@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (((window.innerWidth <= 800) && (window.innerHeight <= 600))){
        chatbot.setAttribute('mobile','') 
     }
+    console.log(chatbot.defaults)
     for (const [k,v] of Object.entries(chatbot.defaults)){
         if (botContainer.dataset[k]!=undefined){
             chatbot.setAttribute(k,botContainer.dataset[k])

@@ -149,6 +149,30 @@ class AiWidget  extends HTMLElement {
         
     }
 
+    get height(){
+        return this.getAttribute('height')
+    }
+    set height(val){
+        if (val) {
+            this.setAttribute('height',val)
+        } else {
+            this.removeAttribute('height')
+        }
+        
+    }
+
+    get width(){
+        return this.getAttribute('width')
+    }
+    set width(val){
+        if (val) {
+            this.setAttribute('width',val)
+        } else {
+            this.removeAttribute('width')
+        }
+        
+    }
+
 
 
     
@@ -166,13 +190,16 @@ class AiWidget  extends HTMLElement {
             brand:'AI Widget', 
             slogan:'Connect RASA with style', 
             brandAvatar:'default',
-            emoji:'basic'
+            emoji:'basic',
+            height:450,
+            width:350
         }
         this.online = false
         this.open=false
         this.uuid= false
         this.socket = false
         this.lan = navigator.language || navigator.userLanguage
+        console.log(this.height)
 
     }
     toogleOpen(e){
@@ -328,8 +355,8 @@ class AiWidget  extends HTMLElement {
                 display: flex;
                 flex-direction: column;
                 background: #f9f9f9;
-                height: 450px;
-                width: 350px;
+                height: ${this.height+'px'};
+                width: ${this.width+'px'};
                 z-index: -123456;
                 opacity: 0;
                 transition: all .5s ease-in-out;
