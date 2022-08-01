@@ -1,6 +1,7 @@
-import {io} from 'socket.io-client'
+import { io } from 'socket.io-client'
 import { Remarkable } from 'remarkable'
 import { createPopup } from '@picmo/popup-picker'
+import { es, pt, fr, de, imputMessage } from './i18n'
 
 class AiWidget  extends HTMLElement {
 
@@ -128,14 +129,6 @@ class AiWidget  extends HTMLElement {
     get imputMessage(){
         return this.getAttribute('imputMessage')
     }
-    set imputMessage(val){
-        if (val) {
-            this.setAttribute('imputMessage',val)
-        } else {
-            this.removeAttribute('imputMessage')
-        }
-        
-    }
     get brandAvatar(){
         return this.getAttribute('brandAvatar')
     }
@@ -147,20 +140,45 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    get emoji(){
+        return this.getAttribute('emoji')
+    }
+    set emoji(val){
+        if (val) {
+            this.setAttribute('emoji',val)
+        } else {
+            this.removeAttribute('emoji')
+        }
+        
+    }
 
 
 
     
     constructor() {
         super()
-        this.defaults = {isOpen:false, websocketUrl:"http://localhost:5005",initialPayload:"/",gradA:"#243A4B",gradB:"#386370",bgClient:"#386370",clientColor:"#FFFFFF",showTime:true, brand:'AI Widget', description:'Lorem ipsum dolor sit amet.',imputMessage:'Write a message', brandAvatar:'default'}
+        this.defaults = {
+            isOpen:false, 
+            websocketUrl:"http://localhost:5005",
+            initialPayload:"/",
+            gradA:"#243A4B",
+            gradB:"#386370",
+            bgClient:"#386370",
+            clientColor:"#FFFFFF",
+            showTime:true, 
+            brand:'AI Widget', 
+            description:'Lorem ipsum dolor sit amet.', 
+            brandAvatar:'default',
+            emoji:'basic'
+        }
         this.online = false
         this.open=false
         this.uuid= false
         this.socket = false
+        this.lan = navigator.language || navigator.userLanguage
+
     }
     toogleOpen(e){
-        console.log('online: ' + this.online)
         if(this.open) {
             e.preventDefault()
             this.botSuport.classList.remove('bot-open')
@@ -455,11 +473,13 @@ class AiWidget  extends HTMLElement {
             .bot-footer span {
                 padding-left: 10px;
                 font-size: 1.2rem;
+                cursor: pointer; 
             }
             .bot-footer button {
                 background-color: transparent;
                 border: none;
                 outline:none;
+                cursor: pointer; 
             }
             .bot-footer:hover button {
                 transform: translatex(4px);
@@ -481,7 +501,7 @@ class AiWidget  extends HTMLElement {
                 <div class="bot-messages">
                 </div>
                 <form class="bot-footer">
-                    <input type="text" placeholder="${this.imputMessage}"/>
+                    <input type="text" placeholder="${(this.lan.substring(0,2) in imputMessage)?imputMessage[this.lan.substring(0,2)]:imputMessage['en']}"/>
                     <span>&#128512</span>
                     <button>${this.sendIcon}</button>
                 </form>
@@ -520,19 +540,40 @@ class AiWidget  extends HTMLElement {
             }
 
         })
-        const picker = createPopup({ 
+        var pickerOptions = { 
             showPreview:false, 
             showRecents:false, 
-        },{
-            referenceElement: this.botMesagges,
-            triggerElement: this.botMesagges
+            showSearch:false,
+            showVariants:false,
+            showCategoryTabs:false,
+            categories:["smileys-emotion"]}
+        switch (this.lan.substring(0,2)){
+            case 'es':
+                pickerOptions['i18n'] = es
+                break;
+            case 'fr':
+                pickerOptions['i18n'] = fr
+            case 'pt':
+                pickerOptions['i18n'] = pt            
+            case 'de':
+                pickerOptions['i18n'] = de
+        }
+        if (this.emoji=='complete'){
+            delete pickerOptions['showSearch']
+            delete pickerOptions['showVariants']
+            delete pickerOptions['showCategoryTabs']
+            delete pickerOptions['categories']
+        }
+        const picker = createPopup(pickerOptions,{
+            referenceElement: this.emojiButton,
+            triggerElement: this.emojiButton
         })
         this.emojiButton.addEventListener('click', e => {
-            e.preventDefault()
-            picker.open()
+            e.stopPropagation()
+            picker.toggle()
         })
         picker.addEventListener('emoji:select', e =>{
-            console.log('Emoji selected:', e.emoji)
+            this.bootImput.value = this.bootImput.value.concat(e.emoji)
         })
         this.botButton.addEventListener('click', e => this.toogleOpen(e))
     }
