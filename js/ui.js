@@ -545,7 +545,7 @@ class AiWidget  extends HTMLElement {
         this.botButton = shadowRoot.querySelector('.bot-button')
         let botMesaggesHeight = this.botSuport.offsetHeight - this.botHeader.offsetHeight - this.botFooter.offsetHeight
         this.botMesagges.style.height = botMesaggesHeight.toString()+'px'
-        if (this.isOpen=='1'){
+        if (this.isOpen=='open'){
             this.botSuport.classList.add('bot-open')
             this.botButton.children[0].innerHTML = this.icons.isClicked
             this.open = true

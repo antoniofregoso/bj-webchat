@@ -11,7 +11,7 @@ Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
 ## Configuration options
 |Attribute|Description|Default Value|
 |---------|-----------|-------------|
-|**data-is-open**|Start open widget: *1* for open.|close|
+|**data-is-open**|Start open widget: *open* for start open and online.|close|
 |**data-websocket-url**| Web socket url address.|http://localhost:5005|
 |**data-initial-payload**|Initial payload set to the bot.|/|
 |**data-grad-a**|Header background gradient start color.|#243A4B|
