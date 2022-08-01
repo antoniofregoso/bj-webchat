@@ -16,16 +16,6 @@ class AiWidget  extends HTMLElement {
         }
     }
 
-    get mobile() {
-        return this.getAttribute('mobile')
-    } 
-    set mobile(val){
-        if (val) {
-            this.getAttribute('mobile','')
-        } else {
-            this.removeAttribute('mobile')
-        }
-    }
 
     get websocketUrl(){
         return this.getAttribute('websocketUrl')
@@ -199,8 +189,15 @@ class AiWidget  extends HTMLElement {
         this.uuid= false
         this.socket = false
         this.lan = navigator.language || navigator.userLanguage
-        console.log(this.height)
 
+    }
+    isMobile() {
+        var match = window.matchMedia || window.msMatchMedia;
+        if(match) {
+            var mq = match("(pointer:coarse)");
+            return mq.matches;
+        }
+        return false;
     }
     toogleOpen(e){
         if(this.open) {
@@ -355,8 +352,8 @@ class AiWidget  extends HTMLElement {
                 display: flex;
                 flex-direction: column;
                 background: #f9f9f9;
-                height: ${this.height+'px'};
-                width: ${this.width+'px'};
+                height: ${(this.isMobile())?(screen.height-100)+'px':this.height+'px'};
+                width: ${(this.isMobile())?'100%':this.width+'px'};
                 z-index: -123456;
                 opacity: 0;
                 transition: all .5s ease-in-out;
@@ -519,7 +516,8 @@ class AiWidget  extends HTMLElement {
                     </div>
                     <div class="bot-header-content">
                         <h1>${this.brand}</h1>
-                        <p>${this.slogan}</p>
+                        ${this.isMobile()===false?`<p>${this.slogan}</p>`:''}
+                        
                     </div>
                 </div>
                 <div class="bot-messages">
