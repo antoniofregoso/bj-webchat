@@ -115,19 +115,16 @@ class AiWidget  extends HTMLElement {
         }
         
     }
-    get description(){
-        return this.getAttribute('description')
+    get slogan(){
+        return this.getAttribute('slogan')
     }
-    set description(val){
+    set slogan(val){
         if (val) {
-            this.setAttribute('description',val)
+            this.setAttribute('slogan',val)
         } else {
-            this.removeAttribute('description')
+            this.removeAttribute('slogan')
         }
         
-    }
-    get imputMessage(){
-        return this.getAttribute('imputMessage')
     }
     get brandAvatar(){
         return this.getAttribute('brandAvatar')
@@ -167,7 +164,7 @@ class AiWidget  extends HTMLElement {
             clientColor:"#FFFFFF",
             showTime:true, 
             brand:'AI Widget', 
-            description:'Lorem ipsum dolor sit amet.', 
+            slogan:'Connect RASA with style', 
             brandAvatar:'default',
             emoji:'basic'
         }
@@ -495,7 +492,7 @@ class AiWidget  extends HTMLElement {
                     </div>
                     <div class="bot-header-content">
                         <h1>${this.brand}</h1>
-                        <p>${this.description}</p>
+                        <p>${this.slogan}</p>
                     </div>
                 </div>
                 <div class="bot-messages">
