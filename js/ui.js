@@ -1,9 +1,8 @@
 import {io} from 'socket.io-client'
 import { Remarkable } from 'remarkable'
+import { createPopup } from '@picmo/popup-picker'
 
 class AiWidget  extends HTMLElement {
-
-   
 
     get isOpen() {
         return this.getAttribute('isOpen')
@@ -230,7 +229,7 @@ class AiWidget  extends HTMLElement {
         } 
         botMessages.insertBefore(quickRepliesNode, botMessages.children[0]);
     }
-    getSessionId(){
+    _getSessionId(){
         const cDecoded = decodeURIComponent(document.cookie)
         const cArr = cDecoded .split('; ')
         var uuid
@@ -249,7 +248,7 @@ class AiWidget  extends HTMLElement {
     openSocket(){
         var md = new Remarkable()
         const botMesagges = this.botMesagges
-        this.uuid = this.getSessionId()
+        this.uuid = this._getSessionId()
         var socket = io(this.websocketUrl, { autoConnect: true})
         socket.on('connect',()=>{
             console.log('SOCKET: connected to the socket server', socket.connected, this.uuid) 
@@ -446,11 +445,16 @@ class AiWidget  extends HTMLElement {
                 background: linear-gradient(93.12deg, ${this.gradB} 0.52%, ${this.gradA} 100%);
             }
             .bot-footer input {
+                flex-grow:2;
                 border: none;
                 padding: 10px 10px;
                 border-radius: 30px;
                 text-align: left;
                 width: 85%;
+            }
+            .bot-footer span {
+                padding-left: 10px;
+                font-size: 1.2rem;
             }
             .bot-footer button {
                 background-color: transparent;
@@ -478,9 +482,11 @@ class AiWidget  extends HTMLElement {
                 </div>
                 <form class="bot-footer">
                     <input type="text" placeholder="${this.imputMessage}"/>
+                    <span>&#128512</span>
                     <button>${this.sendIcon}</button>
                 </form>
             </div>
+            <div class="pickerContainer"></div>
             <div class="bot-button">
                 <button>${this.icons.isNotClicked}</button>
             </div>
@@ -491,6 +497,7 @@ class AiWidget  extends HTMLElement {
         this.botMesagges = shadowRoot.querySelector('.bot-messages')
         this.botFooter = shadowRoot.querySelector('.bot-footer')
         this.bootImput = shadowRoot.querySelector('form.bot-footer input')
+        this.emojiButton = shadowRoot.querySelector('form.bot-footer span')
         this.botButton = shadowRoot.querySelector('.bot-button')
         let botMesaggesHeight = this.botSuport.offsetHeight - this.botHeader.offsetHeight - this.botFooter.offsetHeight
         this.botMesagges.style.height = botMesaggesHeight.toString()+'px'
@@ -499,8 +506,8 @@ class AiWidget  extends HTMLElement {
             this.botButton.children[0].innerHTML = this.icons.isClicked
             this.open = true
             if (this.onLine===false){this.openSocket()}
-        }
-        this.botFooter.addEventListener('submit',(e)=>{
+        }        
+        this.botFooter.addEventListener('submit',e=>{
             e.preventDefault()
             const msg =  this.bootImput.value
             if (msg){
@@ -513,9 +520,22 @@ class AiWidget  extends HTMLElement {
             }
 
         })
+        const picker = createPopup({ 
+            showPreview:false, 
+            showRecents:false, 
+        },{
+            referenceElement: this.botMesagges,
+            triggerElement: this.botMesagges
+        })
+        this.emojiButton.addEventListener('click', e => {
+            e.preventDefault()
+            picker.open()
+        })
+        picker.addEventListener('emoji:select', e =>{
+            console.log('Emoji selected:', e.emoji)
+        })
         this.botButton.addEventListener('click', e => this.toogleOpen(e))
     }
-
 
 
 }

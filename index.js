@@ -1,5 +1,7 @@
 import {AiWidget} from './js/ui'
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     window.customElements.define("ai-widget", AiWidget)
     let botContainer = document.querySelector('.ai-widget')
@@ -16,3 +18,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     botContainer.append(chatbot)
 })
+
