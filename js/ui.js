@@ -352,8 +352,8 @@ class AiWidget  extends HTMLElement {
                 display: flex;
                 flex-direction: column;
                 background: #f9f9f9;
-                height: ${(this.isMobile())?(screen.height-100)+'px':this.height+'px'};
-                width: ${(this.isMobile())?'100%':this.width+'px'};
+                height: ${(this.isMobile())?(screen.height-160)+'px':this.height+'px'};
+                width: ${(this.isMobile())?(screen.width-35)+'px':this.width+'px'};
                 z-index: -123456;
                 opacity: 0;
                 transition: all .5s ease-in-out;
