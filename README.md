@@ -1,6 +1,18 @@
 # ai-widget
 Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
-
+## Note
+Require: `session_persistence: true`
+## Features
+1. Text Messages.
+2. Quick Replies.
+3. Images.
+4. Markdown support.
+5. Persistent sessions.
+6. Easily configurable colors.
+9. Emojis in basic and extended format.
+10. Adapts to mobile devices automatically.
+11. User interface automatically adapts to 5 languages.
+12. Typing indications.
 ## i18n
 1. en
 2. es
