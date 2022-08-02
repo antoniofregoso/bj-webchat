@@ -224,6 +224,12 @@ class AiWidget  extends HTMLElement {
         } 
         item.classList.add('messages-item', type)
         botMessages.insertBefore(item, botMessages.children[0])
+        if (type=='is-client'){
+            let typing = document.createElement('div')
+            typing.innerHTML = '<span class="typing"></span><span class="typing"></span><span class="typing"></span>'
+            typing.classList.add('messages-item', 'is-bot')
+            botMessages.insertBefore(typing, botMessages.children[0])
+        }
     }
     appendImage(src, type, botMessages) {
         const item = document.createElement('div')
@@ -511,9 +517,11 @@ class AiWidget  extends HTMLElement {
          <div class="bot-container">
             <div class="bot-suport">
                 <div class="bot-header">
+                    ${this.isMobile()===false?`
                     <div class="bot-header-image">
                         ${this.brandAvatar!='default'?`<img src="${this.brandAvatar}"/>`:this.brandIcon}
                     </div>
+                    `:''}
                     <div class="bot-header-content">
                         <h1>${this.brand}</h1>
                         ${this.isMobile()===false?`<p>${this.slogan}</p>`:''}
