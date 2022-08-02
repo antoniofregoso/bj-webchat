@@ -30,7 +30,7 @@ Require: `session_persistence: true`
 |**data-grad-b**|Header background gradient end color.|#386370|
 |**data-bg-client**|Background color in customer messages.|#386370|
 |**data-client-color**|Text color in customer messages.|#FFFFFF|
-|**data-show-time**|Show date and time on each message.||
+|**data-show-time**|Show date and time on each message.|"true"|
 |**data-brand**|Brand in header.|AI Widge|
 |**data-slogan**|brand slogan.|Connect RASA with style.|
 |**data-brand-avatar**|Widget logo or avatar URL.|default|

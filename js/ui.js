@@ -214,28 +214,50 @@ class AiWidget  extends HTMLElement {
         }
     }
     appendMessage(msg, type, botMessages){
-        const item = document.createElement('div')
-        item.innerHTML = msg
-        if (this.showTime===true){
-            const itemTime = document.createElement('span')
-            const d = new Date()
-            itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
-            item.appendChild(itemTime) 
-        } 
-        item.classList.add('messages-item', type)
-        botMessages.insertBefore(item, botMessages.children[0])
-        if (type=='is-client'){
-            let typing = document.createElement('div')
-            typing.innerHTML = /*html*/`
-            <div class="typing">
-                <div class="typing__dot"></div>
-                <div class="typing__dot"></div>
-                <div class="typing__dot"></div>
-            </div>
-            `
-            typing.classList.add('messages-item', 'is-bot')
-            setInterval(() => {botMessages.insertBefore(typing, botMessages.children[0])},1000)
-        }
+        if (type==='is-bot'){
+            if(botMessages.querySelectorAll('.typing').length==0){
+                let typing = document.createElement('div')
+                typing.innerHTML = /*html*/`
+                <div class="typing">
+                    <div class="typing__dot"></div>
+                    <div class="typing__dot"></div>
+                    <div class="typing__dot"></div>
+                </div>
+                `
+                typing.classList.add('messages-item', 'is-bot')
+                botMessages.data
+                if(botMessages.querySelectorAll('.typing').length==0)
+                botMessages.insertBefore(typing, botMessages.children[0])
+            }
+            let dt = msg.split(" ").length * 375
+            setTimeout(() => { 
+            const item = document.createElement('div')
+            item.innerHTML = msg
+            if (Boolean(this.showTime)===true){
+                const itemTime = document.createElement('span')
+                const d = new Date()
+                itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+                item.appendChild(itemTime) 
+            } 
+            let tps = botMessages.querySelectorAll('.typing')
+            for (let i = 0; i < tps.length; i++){
+                tps[i].remove()
+            }
+            item.classList.add('messages-item', type)
+            botMessages.insertBefore(item, botMessages.children[0])
+                }, dt)
+            }else{
+                const item = document.createElement('div')
+                item.innerHTML = msg
+                if (Boolean(this.showTime)===true){
+                    const itemTime = document.createElement('span')
+                    const d = new Date()
+                    itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+                    item.appendChild(itemTime) 
+                } 
+                item.classList.add('messages-item', type)
+                botMessages.insertBefore(item, botMessages.children[0])
+            }
     }
     appendImage(src, type, botMessages) {
         const item = document.createElement('div')
@@ -243,7 +265,7 @@ class AiWidget  extends HTMLElement {
         const img = document.createElement('img')
         img.src = src;
         item.appendChild(img)
-        if (this.showTime===true){
+        if (Boolean(this.showTime)===true){
             const br = document.createElement('br')
             const itemTime = document.createElement('span')             
             const d = new Date()
@@ -270,7 +292,7 @@ class AiWidget  extends HTMLElement {
             })
             quickRepliesNode.appendChild(quickReplyDiv);
         })
-        if (this.showTime===true){
+        if (Boolean(this.showTime)===true){
             const br = document.createElement('br'); 
             const itemTime = document.createElement('span');                
             const d = new Date();
@@ -364,8 +386,8 @@ class AiWidget  extends HTMLElement {
                 display: flex;
                 flex-direction: column;
                 background: #f9f9f9;
-                height: ${(this.isMobile())?(screen.height-160)+'px':this.height+'px'};
-                width: ${(this.isMobile())?(screen.width-35)+'px':this.width+'px'};
+                height: ${(this.isMobile())?(screen.height-100)+'px':this.height+'px'};
+                width: ${(this.isMobile())?'100%':this.width+'px'};
                 z-index: -123456;
                 opacity: 0;
                 transition: all .5s ease-in-out;
@@ -482,42 +504,6 @@ class AiWidget  extends HTMLElement {
                 border-bottom-right-radius: 20px;
                 background-color:white;
             }
-            .typing {
-                position: relative;
-              }
-            .typing__dot {
-                float: left;
-                width: 8px;
-                height: 8px;
-                margin: 0 4px;
-                background: #8d8c91;
-                border-radius: 50%;
-                opacity: 0;
-                animation: loadingFade 1s infinite;
-              }
-              .typing__dot:nth-child(1) {
-                animation-delay: 0s;
-              }
-              .typing__dot:nth-child(2) {
-                animation-delay: 0.2s;
-              }
-              .typing__dot:nth-child(3) {
-                animation-delay: 0.4s;
-              }
-              @keyframes loadingFade {
-                0% {
-                  opacity: 0;
-                  transform: translateY(0px);
-                }
-                50% {
-                  opacity: 0.8;
-                  transform: translateY(3px);
-                }
-                100% {
-                  opacity: 0;
-                  transform: translateY(0px);
-                }
-              }
             .bot-footer {
                 position: sticky;
                 bottom: 0;
@@ -553,15 +539,15 @@ class AiWidget  extends HTMLElement {
             .bot-footer:hover button {
                 transform: translatex(4px);
             }
+
+
         </style>
          <div class="bot-container">
             <div class="bot-suport">
                 <div class="bot-header">
-                    ${this.isMobile()===false?`
                     <div class="bot-header-image">
                         ${this.brandAvatar!='default'?`<img src="${this.brandAvatar}"/>`:this.brandIcon}
                     </div>
-                    `:''}
                     <div class="bot-header-content">
                         <h1>${this.brand}</h1>
                         ${this.isMobile()===false?`<p>${this.slogan}</p>`:''}
