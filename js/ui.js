@@ -486,7 +486,7 @@ class AiWidget  extends HTMLElement {
                 color:inherit;
             }
             .messages-item span{
-                font-size: 0.5em;
+                font-size: 0.7em;
                 display:block;
                 text-align: right;
             }
