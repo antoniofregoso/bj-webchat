@@ -1,7 +1,5 @@
 # ai-widget
 Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
-## Note
-Require: `session_persistence: true`
 ## Features
 1. Text Messages.
 2. Quick Replies.
@@ -15,12 +13,6 @@ Require: `session_persistence: true`
 12. Typing indications.
 13. Smart delay between messages.
 14. Does not require link to css style sheet.
-## i18n
-1. en
-2. es
-3. fr
-4. pt
-5. de
 
 ## Configuration options
 |Attribute|Description|Default Value|
@@ -36,6 +28,15 @@ Require: `session_persistence: true`
 |**data-brand**|Brand in header.|AI Widget|
 |**data-slogan**|brand slogan.|Connect RASA with style.|
 |**data-brand-avatar**|Widget logo or avatar URL.|default|
-|**data-emoji**|*basic* or *complete* list of emojis.|basic|
+|**data-emoji**|*basic* or *complete* set of emojis.|basic|
 |**data-height**|Widget height on laptops or desktop devices in pixels.|450|
 |**data-width**|Widget width on laptops or desktop devices in pixels.|350|
+## i18n
+1. en
+2. es
+3. fr
+4. pt
+5. de
+## Notes
+1. Require: `session_persistence: true`
+2. It is not convenient to use the complete set of emojis because the necessary training data is increased in a complex way for each emoji.

@@ -241,8 +241,8 @@ class AiWidget  extends HTMLElement {
             } 
             botMessages.querySelectorAll('.is-typing').forEach(el=>el.remove())
             item.classList.add('messages-item', type)
-            botMessages.scrollTop = botMessages.scrollHeight
             botMessages.insertBefore(item, botMessages.children[0])
+            botMessages.scrollTop = botMessages.scrollHeight
                 }, dt)
             }else{
                 const item = document.createElement('div')
@@ -255,6 +255,7 @@ class AiWidget  extends HTMLElement {
                 } 
                 item.classList.add('messages-item', type)
                 botMessages.insertBefore(item, botMessages.children[0])
+                botMessages.scrollTop = botMessages.scrollHeight
             }
     }
     appendImage(src, type, botMessages) {
@@ -271,8 +272,8 @@ class AiWidget  extends HTMLElement {
             item.appendChild(br)
             item.appendChild(itemTime)
         } 
-        botMessages.scrollTop = botMessages.scrollHeight
         botMessages.insertBefore(item, botMessages.children[0])
+        botMessages.scrollTop = botMessages.scrollHeight
     }
     appendQuickReplies(quickReplies, botMessages) {
         const quickRepliesNode = document.createElement('div')
@@ -299,8 +300,8 @@ class AiWidget  extends HTMLElement {
             quickRepliesNode.appendChild(br);
             quickRepliesNode.appendChild(itemTime) 
         } 
-        botMessages.scrollTop = botMessages.scrollHeight
         botMessages.insertBefore(quickRepliesNode, botMessages.children[0]);
+        botMessages.scrollTop = botMessages.scrollHeight
     }
     _getSessionId(){
         const cDecoded = decodeURIComponent(document.cookie)
