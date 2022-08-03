@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "js-build": "esbuild index.js --bundle --minify --outfile=dist/frontend-assets.min.js"
+    "js-build": "esbuild index.js --bundle --minify --outfile=dist/ai-widget.min.js"
   },
   "repository": {
     "type": "git",
