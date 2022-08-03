@@ -32,11 +32,33 @@ Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
 |**data-height**|Widget height on laptops or desktop devices in pixels.|450|
 |**data-width**|Widget width on laptops or desktop devices in pixels.|350|
 ## i18n
+Detect language based on web browser settings.
+Languages available in the widget:
 1. en
 2. es
 3. fr
 4. pt
 5. de
+
+## How to use
+
+### Standalone
+You can find an `ai-widget.min.js` file in this repository inside the dist folder, which is a standalone build that you can use as follows:
+
+```html
+<script src="/path/to/ai-widget.min.js"></script>
+```
+Additionally inside the body you must add the following div with the options you require:
+
+```html
+<div class="ai-widget"
+    data-websocket-url="https://192.168.100.87"
+    data-emoji="complete"
+    data-height="600"
+    data-width="350">
+</div>
+```
+
 ## Notes
 1. Require: `session_persistence: true`
 2. It is not convenient to use the complete set of emojis because the necessary training data is increased in a complex way for each emoji.

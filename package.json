@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/antoniofregoso/ai-widget#readme",
   "devDependencies": {
-    "esbuild": "^0.14.49"
+    "esbuild": "^0.14.53"
   },
   "dependencies": {
     "@picmo/popup-picker": "^5.4.0",

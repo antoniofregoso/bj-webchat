@@ -1,10 +1,18 @@
+/*!
+ * ai-widget v1.0.0
+ * (c) 2022 Antonio Fregoso - https://www.antoniofregoso.com/
+ * Released under License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+ */
 import { io } from 'socket.io-client'
 import { Remarkable } from 'remarkable'
 import { createPopup } from '@picmo/popup-picker'
 import { es, pt, fr, de, imputMessage } from './i18n'
 
 class AiWidget  extends HTMLElement {
-
+    
+    /**
+     * Defines if the widget is open from the start
+     */
     get isOpen() {
         return this.getAttribute('isOpen')
     } 
@@ -16,7 +24,9 @@ class AiWidget  extends HTMLElement {
         }
     }
 
-
+    /**
+     * The socket URL excluding socket.io
+     */
     get websocketUrl(){
         return this.getAttribute('websocketUrl')
     }
@@ -28,6 +38,9 @@ class AiWidget  extends HTMLElement {
         }
 
     }
+    /**
+     * Initial payload that is sent to the Rasa server
+     */
     get initialPayload(){
         return this.getAttribute('initialPayload')
     }
@@ -39,6 +52,9 @@ class AiWidget  extends HTMLElement {
         }
 
     }
+    /**
+     * Initial color of the gradient of the header and end of the footer
+     */
     get gradA(){
         return this.getAttribute('gradA')
     }
@@ -50,6 +66,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Final color of the gradient of the header and Initial of the footer
+     */
     get gradB(){
         return this.getAttribute('gradB')
     }
@@ -61,6 +80,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Client text bubble background color
+     */
     get bgClient(){
         return this.getAttribute('bgClient')
     }
@@ -72,6 +94,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Text color in client bubble.
+     */
     get clientColor(){
         return this.getAttribute('clientColor')
     }
@@ -83,6 +108,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Enable to show time and date in conversation bubbles.
+     */
     get showTime(){
         return this.getAttribute('showTime')
     }
@@ -94,6 +122,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Text that appears as a markup in the widget header
+     */
     get brand(){
         return this.getAttribute('brand')
     }
@@ -105,6 +136,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Brand slogan. It only appears on laptops and desktop devices.
+     */
     get slogan(){
         return this.getAttribute('slogan')
     }
@@ -116,6 +150,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Brand Logo URL
+     */
     get brandAvatar(){
         return this.getAttribute('brandAvatar')
     }
@@ -127,6 +164,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Defines if the complete set of emojis is presented
+     */
     get emoji(){
         return this.getAttribute('emoji')
     }
@@ -138,7 +178,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
-
+    /**
+     * Widget Height
+     */
     get height(){
         return this.getAttribute('height')
     }
@@ -150,6 +192,9 @@ class AiWidget  extends HTMLElement {
         }
         
     }
+    /**
+     * Widget Width
+     */
 
     get width(){
         return this.getAttribute('width')
@@ -163,9 +208,6 @@ class AiWidget  extends HTMLElement {
         
     }
 
-
-
-    
     constructor() {
         super()
         this.defaults = {
@@ -191,6 +233,9 @@ class AiWidget  extends HTMLElement {
         this.lan = navigator.language || navigator.userLanguage
 
     }
+    /**
+     * Detect if the widget is running on a mobile device.
+     */
     isMobile() {
         var match = window.matchMedia || window.msMatchMedia;
         if(match) {
@@ -199,6 +244,10 @@ class AiWidget  extends HTMLElement {
         }
         return false;
     }
+    /**
+     * Open and close the widget.
+     * @param  {event} e
+     */
     toogleOpen(e){
         if(this.open) {
             e.preventDefault()
@@ -213,6 +262,12 @@ class AiWidget  extends HTMLElement {
             this.open=true
         }
     }
+    /**
+     * Add the client and bot messages to the conversation flow.
+     * @param  {string} msg - The message to add to the container.
+     * @param  {string} type - 'is-client' or 'is-bot'.
+     * @param  {object} botMessages - The message wrapper DIV object.
+     */
     appendMessage(msg, type, botMessages){
         if (type==='is-bot'){
             if(botMessages.querySelectorAll('.typing').length==0){
@@ -259,6 +314,12 @@ class AiWidget  extends HTMLElement {
                 botMessages.scrollTop = botMessages.scrollHeight
             }
     }
+    /**
+     * Adds the Rasa server response image to the conversation flow.
+     * @param  {string} src - image url.
+     * @param  {string} type - 'is-client' or 'is-bot'.
+     * @param  {} botMessages - The message wrapper DIV object.
+     */
     appendImage(src, type, botMessages) {
         const item = document.createElement('div')
         item.classList.add('messages-item', type)
@@ -276,6 +337,11 @@ class AiWidget  extends HTMLElement {
         botMessages.insertBefore(item, botMessages.children[0])
         botMessages.scrollTop = botMessages.scrollHeight
     }
+    /**
+     * 
+     * @param  {object} quickReplies - List of quick responses sent by the Rasa server.
+     * @param  {object} botMessages - The message wrapper DIV object.
+     */
     appendQuickReplies(quickReplies, botMessages) {
         const quickRepliesNode = document.createElement('div')
         quickRepliesNode.classList.add("messages-item");
@@ -320,6 +386,9 @@ class AiWidget  extends HTMLElement {
         }
         return uuid
     }
+    /**
+     * Establishes the connection with the socket.
+     */
     openSocket(){
         var md = new Remarkable()
         const botMesagges = this.botMesagges
@@ -364,6 +433,9 @@ class AiWidget  extends HTMLElement {
         })
         this.socket = socket
     }
+    /**
+     * Create the widget as a DOM component
+     */
     connectedCallback() {
         let shadowRoot = this.attachShadow({ mode: "open" })
         this.icons = {
@@ -443,6 +515,10 @@ class AiWidget  extends HTMLElement {
             }
             .bot-header-image {
                 margin-right: 15px;                
+            }
+            .bot-header-image img {
+                width:50px;
+                height:50px;
             }
             .bot-messages {
                 padding: 0px 20px 20px 20px;

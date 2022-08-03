@@ -1,3 +1,8 @@
+/*!
+ * ai-widget v1.0.0
+ * (c) 2022 Antonio Fregoso - https://www.antoniofregoso.com/
+ * Released under License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+ */
 const es =  {
     'categories.activities': 'Actividades',
     'categories.animals-nature': 'Animales y Naturaleza',
