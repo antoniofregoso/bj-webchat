@@ -13,6 +13,8 @@ Require: `session_persistence: true`
 10. Adapts to mobile devices automatically.
 11. User interface automatically adapts to 5 languages.
 12. Typing indications.
+13. Smart delay between messages.
+14. Does not require link to css style sheet.
 ## i18n
 1. en
 2. es
@@ -31,9 +33,9 @@ Require: `session_persistence: true`
 |**data-bg-client**|Background color in customer messages.|#386370|
 |**data-client-color**|Text color in customer messages.|#FFFFFF|
 |**data-show-time**|Show date and time on each message.|"true"|
-|**data-brand**|Brand in header.|AI Widge|
+|**data-brand**|Brand in header.|AI Widget|
 |**data-slogan**|brand slogan.|Connect RASA with style.|
 |**data-brand-avatar**|Widget logo or avatar URL.|default|
 |**data-emoji**|*basic* or *complete* list of emojis.|basic|
-|**data-height**|Widget height on tablets, laptops or desktop devices in pixels.|450|
-|**data-width**|Widget width on tablets, laptops or desktop devices in pixels.|350|
+|**data-height**|Widget height on laptops or desktop devices in pixels.|450|
+|**data-width**|Widget width on laptops or desktop devices in pixels.|350|

@@ -224,12 +224,12 @@ class AiWidget  extends HTMLElement {
                     <div class="typing__dot"></div>
                 </div>
                 `
-                typing.classList.add('messages-item', 'is-bot')
+                typing.classList.add('messages-item', 'is-bot', 'is-typing')
                 botMessages.data
                 if(botMessages.querySelectorAll('.typing').length==0)
                 botMessages.insertBefore(typing, botMessages.children[0])
             }
-            let dt = msg.split(" ").length * 375
+            let dt = msg.split(" ").length * 300
             setTimeout(() => { 
             const item = document.createElement('div')
             item.innerHTML = msg
@@ -239,10 +239,7 @@ class AiWidget  extends HTMLElement {
                 itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
                 item.appendChild(itemTime) 
             } 
-            let tps = botMessages.querySelectorAll('.typing')
-            for (let i = 0; i < tps.length; i++){
-                tps[i].remove()
-            }
+            botMessages.querySelectorAll('.is-typing').forEach(el=>el.remove())
             item.classList.add('messages-item', type)
             botMessages.insertBefore(item, botMessages.children[0])
                 }, dt)
