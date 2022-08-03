@@ -228,12 +228,13 @@ class AiWidget  extends HTMLElement {
                 botMessages.data
                 if(botMessages.querySelectorAll('.typing').length==0)
                 botMessages.insertBefore(typing, botMessages.children[0])
+                botMessages.scrollTop = botMessages.scrollHeight
             }
             let dt = msg.split(" ").length * 300
             setTimeout(() => { 
             const item = document.createElement('div')
             item.innerHTML = msg
-            if (Boolean(this.showTime)===true){
+            if (this.showTime==='true'){
                 const itemTime = document.createElement('span')
                 const d = new Date()
                 itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
@@ -247,7 +248,7 @@ class AiWidget  extends HTMLElement {
             }else{
                 const item = document.createElement('div')
                 item.innerHTML = msg
-                if (Boolean(this.showTime)===true){
+                if (this.showTime==='true'){
                     const itemTime = document.createElement('span')
                     const d = new Date()
                     itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
@@ -283,16 +284,16 @@ class AiWidget  extends HTMLElement {
             const quickReplyDiv = document.createElement('button')
             quickReplyDiv.innerHTML = quickReply.title;
             quickReplyDiv.classList.add("button")
-            quickReplyDiv.addEventListener("click", function() {
-                this.botMessages.removeChild(quickRepliesNode)
-                appendMessage(quickReply.title, "is-client")
-                io.emit('user_uttered', {
+            quickReplyDiv.addEventListener("click", e => {
+                this.appendMessage(quickReply.title, "is-client",botMessages)
+                this.socket.emit('user_uttered', {
                     "message": quickReply.payload,
                 })
+                quickRepliesNode.remove()
             })
             quickRepliesNode.appendChild(quickReplyDiv);
         })
-        if (Boolean(this.showTime)===true){
+        if (this.showTime==='true'){
             const br = document.createElement('br'); 
             const itemTime = document.createElement('span');                
             const d = new Date();
