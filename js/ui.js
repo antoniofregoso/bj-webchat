@@ -241,6 +241,7 @@ class AiWidget  extends HTMLElement {
             } 
             botMessages.querySelectorAll('.is-typing').forEach(el=>el.remove())
             item.classList.add('messages-item', type)
+            botMessages.scrollTop = botMessages.scrollHeight
             botMessages.insertBefore(item, botMessages.children[0])
                 }, dt)
             }else{
@@ -270,6 +271,7 @@ class AiWidget  extends HTMLElement {
             item.appendChild(br)
             item.appendChild(itemTime)
         } 
+        botMessages.scrollTop = botMessages.scrollHeight
         botMessages.insertBefore(item, botMessages.children[0])
     }
     appendQuickReplies(quickReplies, botMessages) {
@@ -297,6 +299,7 @@ class AiWidget  extends HTMLElement {
             quickRepliesNode.appendChild(br);
             quickRepliesNode.appendChild(itemTime) 
         } 
+        botMessages.scrollTop = botMessages.scrollHeight
         botMessages.insertBefore(quickRepliesNode, botMessages.children[0]);
     }
     _getSessionId(){
@@ -452,6 +455,7 @@ class AiWidget  extends HTMLElement {
                 margin-top: 10px;
                 margin: auto;
                 border-radius: 20px;
+                background-color:white;
             }
             .messages-quick-replies button {
                 margin-left: 5px;
