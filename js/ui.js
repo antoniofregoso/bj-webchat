@@ -665,8 +665,6 @@ class AiWidget  extends HTMLElement {
             .bot-footer:hover button {
                 transform: translatex(4px);
             }
-
-
         </style>
          <div class="bot-container">
             <div class="bot-suport">
