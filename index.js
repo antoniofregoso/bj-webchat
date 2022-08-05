@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const [k,v] of Object.entries(chatbot.defaults)){
         if (botContainer.dataset[k]!=undefined){
             chatbot.setAttribute(k,botContainer.dataset[k])
-        }else {
+        } else {
             chatbot.setAttribute(k,v)
         }
     }
