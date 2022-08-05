@@ -268,106 +268,15 @@ class AiWidget  extends HTMLElement {
      * @param  {string} type - 'is-client' or 'is-bot'.
      * @param  {object} botMessages - The message wrapper DIV object.
      */
-    appendMessage(msg, type, botMessages){
-        if (type==='is-bot'){
-            if(botMessages.querySelectorAll('.typing').length==0){
-                let typing = document.createElement('div')
-                typing.innerHTML = /*html*/`
-                <div class="typing">
-                    <div class="typing__dot"></div>
-                    <div class="typing__dot"></div>
-                    <div class="typing__dot"></div>
-                </div>
-                `
-                typing.classList.add('messages-item', 'is-bot', 'is-typing')
-                botMessages.data
-                if(botMessages.querySelectorAll('.typing').length==0)
-                botMessages.insertBefore(typing, botMessages.children[0])
-                botMessages.scrollTop = botMessages.scrollHeight
-            }
-            let dt = msg.split(" ").length * 300
-            setTimeout(() => { 
-            const item = document.createElement('div')
-            item.innerHTML = msg
-            if (this.showTime==='true'){
-                const itemTime = document.createElement('span')
-                const d = new Date()
-                itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
-                item.appendChild(itemTime) 
-            } 
-            botMessages.querySelectorAll('.is-typing').forEach(el=>el.remove())
-            item.classList.add('messages-item', type)
-            botMessages.insertBefore(item, botMessages.children[0])
-            botMessages.scrollTop = botMessages.scrollHeight
-                }, dt)
-            }else{
-                const item = document.createElement('div')
-                item.innerHTML = msg
-                if (this.showTime==='true'){
-                    const itemTime = document.createElement('span')
-                    const d = new Date()
-                    itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
-                    item.appendChild(itemTime) 
-                } 
-                item.classList.add('messages-item', type)
-                botMessages.insertBefore(item, botMessages.children[0])
-                botMessages.scrollTop = botMessages.scrollHeight
-            }
-    }
-    /**
-     * Adds the Rasa server response image to the conversation flow.
-     * @param  {string} src - image url.
-     * @param  {string} type - 'is-client' or 'is-bot'.
-     * @param  {} botMessages - The message wrapper DIV object.
-     */
-    appendImage(src, type, botMessages) {
+    appendMessage(msg, botMessages){
         const item = document.createElement('div')
-        item.classList.add('messages-item', type)
-        const img = document.createElement('img')
-        img.src = src;
-        item.appendChild(img)
-        if (Boolean(this.showTime)===true){
-            const br = document.createElement('br')
-            const itemTime = document.createElement('span')             
-            const d = new Date()
-            itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
-            item.appendChild(br)
-            item.appendChild(itemTime)
-        } 
+        item.innerHTML = msg
+        const itemTime = document.createElement('span')
+        const d = new Date()
+        itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+        item.appendChild(itemTime) 
+        item.classList.add('messages-item', 'is-client')
         botMessages.insertBefore(item, botMessages.children[0])
-        botMessages.scrollTop = botMessages.scrollHeight
-    }
-    /**
-     * 
-     * @param  {object} quickReplies - List of quick responses sent by the Rasa server.
-     * @param  {object} botMessages - The message wrapper DIV object.
-     */
-    appendQuickReplies(quickReplies, botMessages) {
-        const quickRepliesNode = document.createElement('div')
-        quickRepliesNode.classList.add("messages-item");
-        quickRepliesNode.classList.add("messages-quick-replies")
-        quickReplies.forEach(quickReply => {
-            const quickReplyDiv = document.createElement('button')
-            quickReplyDiv.innerHTML = quickReply.title;
-            quickReplyDiv.classList.add("button")
-            quickReplyDiv.addEventListener("click", e => {
-                this.appendMessage(quickReply.title, "is-client",botMessages)
-                this.socket.emit('user_uttered', {
-                    "message": quickReply.payload,
-                })
-                quickRepliesNode.remove()
-            })
-            quickRepliesNode.appendChild(quickReplyDiv);
-        })
-        if (this.showTime==='true'){
-            const br = document.createElement('br'); 
-            const itemTime = document.createElement('span');                
-            const d = new Date();
-            itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
-            quickRepliesNode.appendChild(br);
-            quickRepliesNode.appendChild(itemTime) 
-        } 
-        botMessages.insertBefore(quickRepliesNode, botMessages.children[0]);
         botMessages.scrollTop = botMessages.scrollHeight
     }
     _getSessionId(){
@@ -420,15 +329,11 @@ class AiWidget  extends HTMLElement {
           })
         
         socket.on('bot_uttered', (response) =>{
-            if (response.text) {
-                let msg = md.render(response.text)
-                this.appendMessage(msg, "is-bot", botMesagges);
-            }
-            if (response.attachment) {
-                this.appendImage(response.attachment.payload.src, "is-bot", botMesagges);
-            }
-            if (response.quick_replies) {
-                this.appendQuickReplies(response.quick_replies, botMesagges);
+            let items = Object.keys(response)
+            for(let i=0; i< items.length; i++){
+                var r = {}
+                r[items[i]]=response[items[i]]
+                this.responsesQueue.push(r)
             }
         })
         this.socket = socket
@@ -444,6 +349,112 @@ class AiWidget  extends HTMLElement {
         }
         this.sendIcon = '<svg x="0px" y="0px" viewBox="0 0 30 30" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><g id="send" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="ic_fluent_send_28_filled" fill="#212121" fill-rule="nonzero"><path d="M3.78963301,2.77233335 L24.8609339,12.8499121 C25.4837277,13.1477699 25.7471402,13.8941055 25.4492823,14.5168992 C25.326107,14.7744476 25.1184823,14.9820723 24.8609339,15.1052476 L3.78963301,25.1828263 C3.16683929,25.4806842 2.42050372,25.2172716 2.12264586,24.5944779 C1.99321184,24.3238431 1.96542524,24.015685 2.04435886,23.7262618 L4.15190935,15.9983421 C4.204709,15.8047375 4.36814355,15.6614577 4.56699265,15.634447 L14.7775879,14.2474874 C14.8655834,14.2349166 14.938494,14.177091 14.9721837,14.0981464 L14.9897199,14.0353553 C15.0064567,13.9181981 14.9390703,13.8084248 14.8334007,13.7671556 L14.7775879,13.7525126 L4.57894108,12.3655968 C4.38011873,12.3385589 4.21671819,12.1952832 4.16392965,12.0016992 L2.04435886,4.22889788 C1.8627142,3.56286745 2.25538645,2.87569101 2.92141688,2.69404635 C3.21084015,2.61511273 3.51899823,2.64289932 3.78963301,2.77233335 Z"  id="path2" fill="' + this.clientColor + '"></path> </g> </g></svg>'
         this.brandIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><path d="m 39.56634,14.579155 c 0,8.048627 -6.526363,14.577073 -14.577072,14.577073 -8.050709,0 -14.577073,-6.528446 -14.577073,-14.577073 C 10.412195,6.5263637 16.938559,0 24.989268,0 33.039977,0 39.56634,6.5263637 39.56634,14.579155 Z m -3.327737,14.951912 c -3.136153,2.367733 -7.026149,3.790039 -11.249335,3.790039 -4.227351,0 -8.11943,-1.426471 -11.259748,-3.794204 C 5.2498287,33.260715 0,44.886972 0,49.978535 h 49.978535 c 0,-5.045749 -5.414341,-16.672006 -13.739932,-20.447468 z" fill="' + this.clientColor + '"/></svg>'
+        this.responsesQueue = []
+        /**
+         * @param  {array} arr - Responses queuee
+         * @param  {function} callback - Action to perform in the push event
+         */
+        var onPushEvent = function(arr, callback) {
+            arr.push = function(e) {
+                Array.prototype.push.call(arr, e)
+                callback(arr);
+            }
+          }
+        /**
+         * Send the responses from the Rasa server to the conversation stream pretending to be human.
+         * @param  {array} updatedArr - The responses queue
+         */
+        async function sendResponse(updatedArr) {
+            const botMessages = shadowRoot.querySelector('.bot-messages') 
+            let typing = document.createElement('div')
+            typing.innerHTML = /*html*/`
+            <div class="typing">
+                <div class="typing__dot"></div>
+                <div class="typing__dot"></div>
+                <div class="typing__dot"></div>
+            </div>
+            `
+            typing.classList.add('messages-item', 'is-bot', 'is-typing')
+            botMessages.data
+            if(botMessages.querySelectorAll('.typing').length==0)
+            botMessages.insertBefore(typing, botMessages.children[0])
+            botMessages.scrollTop = botMessages.scrollHeight
+            await new Promise(resolve => setTimeout(()=>{   
+                var md = new Remarkable()
+                let response = updatedArr.shift()
+                if (response['text']!==undefined){
+                    let msg = md.render(response.text)
+                    const item = document.createElement('div')
+                    item.innerHTML = msg
+                    const itemTime = document.createElement('span')
+                    const d = new Date()
+                    itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+                    item.appendChild(itemTime)
+                    botMessages.querySelectorAll('.is-typing').forEach(el=>el.remove())
+                    item.classList.add('messages-item', 'is-bot')
+                    botMessages.insertBefore(item, botMessages.children[0])
+                    botMessages.scrollTop = botMessages.scrollHeight
+                }
+                if (response['attachment']!==undefined){
+                    const item = document.createElement('div')
+                    item.classList.add('messages-item', type)
+                    const img = document.createElement('img')
+                    img.src = src;
+                    item.appendChild(img) 
+                    const br = document.createElement('br')
+                    const itemTime = document.createElement('span')             
+                    const d = new Date()
+                    itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+                    item.appendChild(br)
+                    item.appendChild(itemTime)
+                    botMessages.insertBefore(item, botMessages.children[0])
+                    botMessages.scrollTop = botMessages.scrollHeight
+                }
+                if (response['quick_replies']!==undefined){
+                    const quickRepliesNode = document.createElement('div')
+                    quickRepliesNode.classList.add("messages-item");
+                    quickRepliesNode.classList.add("messages-quick-replies")
+                    response['quick_replies'].forEach(quickReply => {
+                        const quickReplyDiv = document.createElement('button')
+                        quickReplyDiv.innerHTML = quickReply.title;
+                        quickReplyDiv.classList.add("button")
+                        quickReplyDiv.addEventListener("click", e => {
+                            const item = document.createElement('div')
+                            item.innerHTML = quickReply.title
+                            const itemTime = document.createElement('span')
+                            const d = new Date()
+                            itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+                            item.appendChild(itemTime) 
+                            item.classList.add('messages-item', 'is-client')
+                            botMessages.insertBefore(item, botMessages.children[0])
+                            botMessages.scrollTop = botMessages.scrollHeight
+                            quickRepliesNode.remove()
+                            this.socket.emit('user_uttered', {
+                                "message": quickReply.payload,
+                            })
+                        })
+                        quickRepliesNode.appendChild(quickReplyDiv);
+                    })
+                    const br = document.createElement('br'); 
+                    const itemTime = document.createElement('span');                
+                    const d = new Date();
+                    itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+                    quickRepliesNode.appendChild(br);
+                    quickRepliesNode.appendChild(itemTime) 
+                    botMessages.insertBefore(quickRepliesNode, botMessages.children[0]);
+                    botMessages.scrollTop = botMessages.scrollHeight
+                }
+            }, (updatedArr[0]['text']!==undefined)?updatedArr[0]['text'].split(" ").length * 300:1200, updatedArr))
+          }
+          
+        /**
+         * Trigger every time a response enters the queue.
+         * @param  {object} this.responsesQueue
+         * @param  {object} function(updatedArr
+         */
+        onPushEvent(this.responsesQueue, function(updatedArr) {
+            sendResponse(updatedArr)
+          })
         shadowRoot.innerHTML =/*html*/ `
         <style>
             .bot-container {
@@ -565,7 +576,7 @@ class AiWidget  extends HTMLElement {
             }
             .messages-item span{
                 font-size: 0.7em;
-                display:block;
+                display:${(this.showTime=='true')?'block':'none'};
                 text-align: right;
             }
             .is-client {
@@ -707,7 +718,7 @@ class AiWidget  extends HTMLElement {
                     "message": msg,
                 })
                 this.bootImput.value = ''
-                this.appendMessage(msg, "is-client", this.botMesagges)           
+                this.appendMessage(msg, this.botMesagges)           
             }
 
         })
