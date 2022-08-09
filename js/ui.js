@@ -329,12 +329,7 @@ class AiWidget  extends HTMLElement {
           })
         
         socket.on('bot_uttered', (response) =>{
-            let items = Object.keys(response)
-            for(let i=0; i< items.length; i++){
-                var r = {}
-                r[items[i]]=response[items[i]]
-                this.responsesQueue.push(r)
-            }
+            this.responsesQueue.push(response)
         })
         this.socket = socket
     }
@@ -382,68 +377,56 @@ class AiWidget  extends HTMLElement {
             await new Promise(resolve => setTimeout(()=>{   
                 var md = new Remarkable()
                 let response = updatedArr.shift()
+                console.log(response)
+                const item = document.createElement('div')
+                item.classList.add('messages-item', 'is-bot')
                 if (response['text']!==undefined){
+                    console.log(response.text)
                     let msg = md.render(response.text)
-                    const item = document.createElement('div')
                     item.innerHTML = msg
-                    const itemTime = document.createElement('span')
-                    const d = new Date()
-                    itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
-                    item.appendChild(itemTime)
-                    botMessages.querySelectorAll('.is-typing').forEach(el=>el.remove())
-                    item.classList.add('messages-item', 'is-bot')
-                    botMessages.insertBefore(item, botMessages.children[0])
-                    botMessages.scrollTop = botMessages.scrollHeight
+                    console.log(msg)
                 }
                 if (response['attachment']!==undefined){
-                    const item = document.createElement('div')
-                    item.classList.add('messages-item', type)
+                    if (response['attachment']['type']==='image'){
                     const img = document.createElement('img')
-                    img.src = src;
-                    item.appendChild(img) 
-                    const br = document.createElement('br')
-                    const itemTime = document.createElement('span')             
-                    const d = new Date()
-                    itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
-                    item.appendChild(br)
-                    item.appendChild(itemTime)
-                    botMessages.insertBefore(item, botMessages.children[0])
-                    botMessages.scrollTop = botMessages.scrollHeight
+                    img.src = response['attachment']['payload']['src']
+                    item.appendChild(img)                                    
+                    }
                 }
                 if (response['quick_replies']!==undefined){
-                    const quickRepliesNode = document.createElement('div')
-                    quickRepliesNode.classList.add("messages-item");
-                    quickRepliesNode.classList.add("messages-quick-replies")
+                    item.classList.remove('is-bot')
+                    item.classList.add("messages-quick-replies")
+                    const buttonsContainer = document.createElement('div')
                     response['quick_replies'].forEach(quickReply => {
-                        const quickReplyDiv = document.createElement('button')
-                        quickReplyDiv.innerHTML = quickReply.title;
-                        quickReplyDiv.classList.add("button")
-                        quickReplyDiv.addEventListener("click", e => {
-                            const item = document.createElement('div')
-                            item.innerHTML = quickReply.title
+                        const quickReplyButton = document.createElement('button')
+                        quickReplyButton.innerHTML = quickReply.title
+                        quickReplyButton.classList.add("button")
+                        quickReplyButton.addEventListener("click", e => {
+                            const quickReplyItem = document.createElement('div')
+                            quickReplyItem.innerHTML = quickReply.title
                             const itemTime = document.createElement('span')
                             const d = new Date()
                             itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
-                            item.appendChild(itemTime) 
-                            item.classList.add('messages-item', 'is-client')
-                            botMessages.insertBefore(item, botMessages.children[0])
+                            quickReplyItem.appendChild(itemTime) 
+                            quickReplyItem.classList.add('messages-item', 'is-client')
+                            botMessages.insertBefore(quickReplyItem, botMessages.children[0])
                             botMessages.scrollTop = botMessages.scrollHeight
-                            quickRepliesNode.remove()
+                            quickReplyItem.remove()
                             this.socket.emit('user_uttered', {
                                 "message": quickReply.payload,
                             })
                         })
-                        quickRepliesNode.appendChild(quickReplyDiv);
+                        buttonsContainer.appendChild(quickReplyButton)
                     })
-                    const br = document.createElement('br'); 
-                    const itemTime = document.createElement('span');                
-                    const d = new Date();
-                    itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
-                    quickRepliesNode.appendChild(br);
-                    quickRepliesNode.appendChild(itemTime) 
-                    botMessages.insertBefore(quickRepliesNode, botMessages.children[0]);
-                    botMessages.scrollTop = botMessages.scrollHeight
+                    item.appendChild(buttonsContainer)
                 }
+                const itemTime = document.createElement('span')             
+                const d = new Date()
+                itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+                item.appendChild(itemTime)
+                botMessages.querySelectorAll('.is-typing').forEach(el=>el.remove())
+                botMessages.insertBefore(item, botMessages.children[0])
+                botMessages.scrollTop = botMessages.scrollHeight        
             }, (updatedArr[0]['text']!==undefined)?updatedArr[0]['text'].split(" ").length * 300:1200, updatedArr))
           }
           
@@ -551,6 +534,9 @@ class AiWidget  extends HTMLElement {
                 margin-right: 5px;
                 padding: 5px 10px 5px 10px;
                 box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            }
+            .messages-quick-replies div {
+                text-align: center;
             }
             .messages-item {
                 width: fit-content;
