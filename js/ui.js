@@ -377,20 +377,42 @@ class AiWidget  extends HTMLElement {
             await new Promise(resolve => setTimeout(()=>{   
                 var md = new Remarkable()
                 let response = updatedArr.shift()
-                console.log(response)
                 const item = document.createElement('div')
                 item.classList.add('messages-item', 'is-bot')
                 if (response['text']!==undefined){
-                    console.log(response.text)
                     let msg = md.render(response.text)
                     item.innerHTML = msg
-                    console.log(msg)
                 }
                 if (response['attachment']!==undefined){
                     if (response['attachment']['type']==='image'){
                     const img = document.createElement('img')
                     img.src = response['attachment']['payload']['src']
                     item.appendChild(img)                                    
+                    }
+                    if (response['attachment']['type']==='video'){
+                        if (response['attachment']['payload']['src'].includes('https://www.youtube.com/')){
+                            console.log(response['attachment']['payload']['src'])
+                            console.log(response['attachment']['payload']['src'].replace('watch', 'embebed'))
+                            const video = document.createElement('div')
+                            video.classList.add('messages-video')
+                            video.innerHTML = /*html*/`
+                                <iframe width="560" height="315" src="${response['attachment']['payload']['src'].replace('watch', 'embebed')}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+                            item.appendChild(video)
+                        } else {
+                            const video = document.createElement('video')
+                            video.src = response['attachment']['payload']['src']
+                            item.appendChild(video)
+                        }
+                        
+                    }
+                }
+                if (response['custom']!==undefined){
+                    if (response['custom']['content_type']==='image'){
+                        item.innerHTML = /*html*/`
+                            <img src="${response['custom']['payload']['src']}"/>
+                            <h1>${response['custom']['payload']['title']}</h1>
+                            ${response['custom']['payload']['description']!==undefined?`<p>${response['custom']['payload']['description']}</p>`:""}
+                        `
                     }
                 }
                 if (response['quick_replies']!==undefined){
@@ -549,6 +571,14 @@ class AiWidget  extends HTMLElement {
                 width: 100%;
                 height: auto;
             }
+            .messages-item video {
+                width: 100%;
+                height: auto;
+            }
+            .messages-video {
+                width: 90%;
+                height: auto;
+            }
             .messages-item ul {
                 margin-left: 5px;
                 list-style-type: disc;
@@ -564,6 +594,9 @@ class AiWidget  extends HTMLElement {
                 font-size: 0.7em;
                 display:${(this.showTime=='true')?'block':'none'};
                 text-align: right;
+            }
+            .messages-item h1 {
+                font-size: 1.0em;
             }
             .is-client {
                 margin-left: auto;
