@@ -1,4 +1,4 @@
-# ai-widget
+# aiWidget
 Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
 ## Features
 1. Text Messages.
@@ -29,6 +29,8 @@ Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
 |**data-slogan**|brand slogan.|Connect RASA with style.|
 |**data-brand-avatar**|Widget logo or avatar URL.|default|
 |**data-emoji**|*basic* or *complete* set of emojis.|basic|
+|**data-map-token**|Mapbox GL access token|none|
+|**data-map-zoom**|Map zoom 0 to 15| 8 |
 |**data-height**|Widget height on laptops or desktop devices in pixels.|450|
 |**data-width**|Widget width on laptops or desktop devices in pixels.|350|
 ## i18n
@@ -39,6 +41,24 @@ Languages available in the widget:
 3. fr
 4. pt
 5. de
+
+## Markdown to html
+aiWidget uses **remarkable** to convert the markdown the **Rasa** responses to html.
+You can handle:
+1. Headings.
+2. Horizontal Rules.
+3. Typographic replacements.
+4. Emphasis.
+5. Blockquotes.
+6. Lists.
+7. Code.
+8. Tables.
+9. Images within paragraphs.
+10. Footnotes.
+11. Definition lists.
+12. Abbreviations
+
+[Here](https://jonschlinkert.github.io/remarkable/demo/) you can consult the syntax that can be handled.
 
 ## How to use
 
@@ -55,9 +75,11 @@ Additionally inside the body you must add the following div with the options you
     data-websocket-url="https://192.168.100.87"
     data-emoji="complete"
     data-height="600"
-    data-width="350">
+    data-width="350"
+    ... >
 </div>
 ```
+
 
 ## Notes
 1. Require: `session_persistence: true`
