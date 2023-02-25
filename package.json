@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@picmo/popup-picker": "^5.4.0",
+    "mapbox-gl": "^2.9.2",
     "remarkable": "^2.0.1",
     "socket.io-client": "^4.5.1"
   }

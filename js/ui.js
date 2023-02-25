@@ -7,6 +7,7 @@ import { io } from 'socket.io-client'
 import { Remarkable } from 'remarkable'
 import { createPopup } from '@picmo/popup-picker'
 import { es, pt, fr, de, imputMessage } from './i18n'
+import  mapboxgl  from 'mapbox-gl'
 
 class AiWidget  extends HTMLElement {
     
@@ -210,6 +211,7 @@ class AiWidget  extends HTMLElement {
 
     constructor() {
         super()
+        this.attachShadow({ mode: 'open' })
         this.defaults = {
             isOpen:false, 
             websocketUrl:"http://localhost:5005",
@@ -223,6 +225,8 @@ class AiWidget  extends HTMLElement {
             slogan:'Connect RASA with style', 
             brandAvatar:'default',
             emoji:'basic',
+            mapToken:undefined,
+            mapZoom:8,
             height:450,
             width:350
         }
@@ -231,7 +235,6 @@ class AiWidget  extends HTMLElement {
         this.uuid= false
         this.socket = false
         this.lan = navigator.language || navigator.userLanguage
-
     }
     /**
      * Detect if the widget is running on a mobile device.
@@ -299,8 +302,6 @@ class AiWidget  extends HTMLElement {
      * Establishes the connection with the socket.
      */
     openSocket(){
-        var md = new Remarkable()
-        const botMesagges = this.botMesagges
         this.uuid = this._getSessionId()
         var socket = io(this.websocketUrl, { autoConnect: true})
         socket.on('connect',()=>{
@@ -329,6 +330,7 @@ class AiWidget  extends HTMLElement {
           })
         
         socket.on('bot_uttered', (response) =>{
+            console.log(response)
             this.responsesQueue.push(response)
         })
         this.socket = socket
@@ -337,7 +339,8 @@ class AiWidget  extends HTMLElement {
      * Create the widget as a DOM component
      */
     connectedCallback() {
-        let shadowRoot = this.attachShadow({ mode: "open" })
+        //let shadowRoot = this.attachShadow({ mode: "open" })
+        const { shadowRoot } = this
         this.icons = {
             isClicked: '<svg x="0px" y="0px" viewBox="0 0 30 30" width="30" height="30" xmlns="http://www.w3.org/2000/svg"> <g id="g4"      transform="matrix(0.06696429,0,0,0.06696429,-2.1428571,-2.2098214)"><path d="M 256,33 C 132.3,33 32,133.3 32,257 32,380.7 132.3,481 256,481 379.7,481 480,380.7 480,257 480,133.3 379.7,33 256,33 Z m 108.3,299.5 c 1.5,1.5 2.3,3.5 2.3,5.6 0,2.1 -0.8,4.2 -2.3,5.6 l -21.6,21.7 c -1.6,1.6 -3.6,2.3 -5.6,2.3 -2,0 -4.1,-0.8 -5.6,-2.3 L 256,289.8 180.6,365.5 c -1.5,1.6 -3.6,2.3 -5.6,2.3 -2,0 -4.1,-0.8 -5.6,-2.3 l -21.6,-21.7 c -1.5,-1.5 -2.3,-3.5 -2.3,-5.6 0,-2.1 0.8,-4.2 2.3,-5.6 l 75.7,-76 -75.9,-75 c -3.1,-3.1 -3.1,-8.2 0,-11.3 l 21.6,-21.7 c 1.5,-1.5 3.5,-2.3 5.6,-2.3 2.1,0 4.1,0.8 5.6,2.3 l 75.7,74.7 75.7,-74.7 c 1.5,-1.5 3.5,-2.3 5.6,-2.3 2.1,0 4.1,0.8 5.6,2.3 l 21.6,21.7 c 3.1,3.1 3.1,8.2 0,11.3 l -75.9,75 z"  id="path2" fill="' + this.gradA + '" /></g></svg>',
             isNotClicked: '<svg x="0px" y="0px" viewBox="0 0 30 30" width="30" height="30" xmlns="http://www.w3.org/2000/svg"> <g id="XMLID_1202_"    transform="matrix(0.06521739,0,0,0.06519286,0,-0.38460043)"> 	<g id="g8"> <g    id="g6"> <path    d="M 440.047,396.143 C 426.855,390.936 415.321,381.986 407.003,370.333 439.582,348.319 460,316.762 460,281.701 c 0,-38.367 -24.445,-72.543 -62.527,-94.602 -4.023,92.95 -102.669,159.14 -213.667,159.14 -9.342,0 -18.6,-0.481 -27.755,-1.387 28.905,34.387 80.701,57.309 139.8,57.309 21.556,0 42.138,-3.055 60.996,-8.597 16.873,15.79 40.876,23.447 65.237,18.454 6.542,-1.341 12.702,-3.51 18.395,-6.376 1.834,-0.923 2.955,-2.838 2.862,-4.889 -0.094,-2.053 -1.384,-3.856 -3.294,-4.61 z"     id="path2" fill="' + this.gradA + '"  /> <path d="M 367.612,181.353 C 367.612,106.858 285.319,46.468 183.806,46.468 82.293,46.468 0,106.858 0,181.353 0,220.61 22.86,255.945 59.337,280.594 49.767,294 36.4,304.212 21.124,309.968 c -1.919,0.723 -3.236,2.503 -3.364,4.55 -0.128,2.047 0.958,3.978 2.773,4.934 11.88,6.254 25.231,9.519 38.572,9.519 21.307,0 41.377,-8.301 56.401,-22.36 21.116,6.206 44.163,9.627 68.301,9.627 101.513,0 183.805,-60.39 183.805,-134.885 z"  id="path2" fill="' + this.gradA + '"  /> </g> </g> </g> </svg>'
@@ -414,6 +417,14 @@ class AiWidget  extends HTMLElement {
                             ${response['custom']['payload']['description']!==undefined?`<p>${response['custom']['payload']['description']}</p>`:""}
                         `
                     }
+                    if (response['custom']['content_type']==='location'){
+                        mapboxgl.accessToken = "pk.eyJ1IjoiYW50b25pb2ZyZWdvc28iLCJhIjoiY2t2NnZsYjRtMjJ0NjJxbXMwN2g1ajg5YyJ9.pD7yaooCH5IqBdc4jftIrA"
+                        const map = new mapboxgl.Map({
+                            container: item,
+                            //style: 'mapbox://styles/mapbox/streets-v11', 
+                            enter: [-99.21646907316129, 19.29342060773046]
+                        })
+                    }
                 }
                 if (response['quick_replies']!==undefined){
                     item.classList.remove('is-bot')
@@ -459,9 +470,9 @@ class AiWidget  extends HTMLElement {
          */
         onPushEvent(this.responsesQueue, function(updatedArr) {
             sendResponse(updatedArr)
-          })
+          })   
         shadowRoot.innerHTML =/*html*/ `
-        <style>
+        <style>            
             .bot-container {
                 position: fixed;
                 bottom: 30px;
@@ -775,9 +786,11 @@ class AiWidget  extends HTMLElement {
             this.bootImput.value = this.bootImput.value.concat(e.emoji)
         })
         this.botButton.addEventListener('click', e => this.toogleOpen(e))
+        this.open = this.open
     }
-
-
+    disconnectedCallback() {
+        this.botFooter.removeEventListener('submit')
+    }       
 }
 
 export {AiWidget}
