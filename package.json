@@ -1,34 +1,32 @@
 {
-  "name": "ai-widget",
-  "version": "0.0.1",
-  "description": "Web Widget to connect to the Rasa conversational chatbot",
+  "name": "rdx-webchat",
+  "version": "1.0.0",
+  "description": "Web Component  to connect to the Rasa conversational chatbot version 3.1 or later.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "js-build": "esbuild index.js --bundle --minify --outfile=dist/ai-widget.min.js"
+    "build": "esbuild index.js --bundle --outfile=public/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antoniofregoso/ai-widget.git"
+    "url": "git+https://github.com/antoniofregoso/rdx-webchat.git"
   },
   "keywords": [
-    "rasa",
-    "chatbot",
-    "botwidget"
+    "rasa"
   ],
-  "author": "Antonio Fregoso <yomero@antoniofregoso.com>",
+  "author": "Antonio Fregoso",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/antoniofregoso/ai-widget/issues"
+    "url": "https://github.com/antoniofregoso/rdx-webchat/issues"
   },
-  "homepage": "https://github.com/antoniofregoso/ai-widget#readme",
+  "homepage": "https://github.com/antoniofregoso/rdx-webchat#readme",
   "devDependencies": {
-    "esbuild": "^0.14.53"
+    "esbuild": "^0.17.17"
   },
   "dependencies": {
-    "@picmo/popup-picker": "^5.4.0",
-    "mapbox-gl": "^2.9.2",
+    "@picmo/popup-picker": "^5.8.2",
+    "mapbox-gl": "^2.14.1",
     "remarkable": "^2.0.1",
-    "socket.io-client": "^4.5.1"
+    "socket.io-client": "^4.6.1"
   }
 }

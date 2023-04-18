@@ -1,5 +1,5 @@
-# aiWidget
-Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
+# Rdx Webchat
+Web Component to connect to the Rasa conversational chatbot version 3.1 or later.
 ## Features
 1. Text Messages.
 2. Quick Replies.
@@ -14,25 +14,25 @@ Web Widget to connect to the Rasa conversational chatbot version 3.1 or later.
 13. Smart delay between messages.
 14. Does not require link to css style sheet.
 
-## Configuration options
+## Attributes
 |Attribute|Description|Default Value|
 |---------|-----------|-------------|
-|**data-is-open**|Start open widget: *open* for start open and online.|close|
-|**data-websocket-url**| Web socket url address.|http://localhost:5005|
-|**data-initial-payload**|Initial payload set to the bot.|/|
-|**data-grad-a**|Header background gradient start color.|#243A4B|
-|**data-grad-b**|Header background gradient end color.|#386370|
-|**data-bg-client**|Background color in customer messages.|#386370|
-|**data-client-color**|Text color in customer messages.|#FFFFFF|
-|**data-show-time**|Show date and time on each message.|"true"|
-|**data-brand**|Brand in header.|AI Widget|
-|**data-slogan**|brand slogan.|Connect RASA with style.|
-|**data-brand-avatar**|Widget logo or avatar URL.|default|
-|**data-emoji**|*basic* or *complete* set of emojis.|basic|
-|**data-map-token**|Mapbox GL access token|none|
-|**data-map-zoom**|Map zoom 0 to 15| 8 |
-|**data-height**|Widget height on laptops or desktop devices in pixels.|450|
-|**data-width**|Widget width on laptops or desktop devices in pixels.|350|
+|**is-open**|Start open widget: *open* for start open and online.|close|
+|**websocket-url**| Web socket url address.|http://localhost:5005|
+|**initial-payload**|Initial payload set to the bot.|/|
+|**grad-a**|Header background gradient start color.|#243A4B|
+|**grad-b**|Header background gradient end color.|#386370|
+|**bg-client**|Background color in customer messages.|#386370|
+|**client-color**|Text color in customer messages.|#FFFFFF|
+|**show-time**|Show date and time on each message.|"true"|
+|**brand**|Brand in header.|AI Widget|
+|**slogan**|brand slogan.|Connect RASA with style.|
+|**brand-avatar**|Widget logo or avatar URL.|default|
+|**emoji**|*basic* or *complete* set of emojis.|basic|
+|**map-token**|Mapbox GL access token|none|
+|**map-zoom**|Map zoom 0 to 15| 8 |
+|**height**|Widget height on laptops or desktop devices in pixels.|450|
+|**width**|Widget width on laptops or desktop devices in pixels.|350|
 ## i18n
 Detect language based on web browser settings.
 Languages available in the widget:
@@ -62,22 +62,14 @@ You can handle:
 
 ## How to use
 
-### Standalone
-You can find an `ai-widget.min.js` file in this repository inside the dist folder, which is a standalone build that you can use as follows:
-
 ```html
-<script src="/path/to/ai-widget.min.js"></script>
-```
-Additionally inside the body you must add the following div with the options you require:
-
-```html
-<div class="ai-widget"
-    data-websocket-url="https://192.168.100.87"
-    data-emoji="complete"
-    data-height="600"
-    data-width="350"
+<rdx-webchat
+    websocket-url="https://192.168.100.87"
+    emoji="complete"
+    height="600"
+    width="350"
     ... >
-</div>
+</rdx-webchat>
 ```
 
 
