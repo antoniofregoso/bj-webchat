@@ -12,8 +12,8 @@ import  mapboxgl  from 'mapbox-gl';
 
 export class RdxWebchat  extends HTMLElement {
 
-    isOpen = this.getAttribute("is-opene") || false;
-    websocketUrl = this.getAttribute("websocket-url") || "http://localhost:5005";
+    isOpen = this.getAttribute("is-open") || false;
+    websocketUrl = this.getAttribute("websocket-url") || "http://0.0.0.0:5005";
     initialPayload = this.getAttribute("initial-payload") || "/";
     gradA = this.getAttribute("grad-a") || "#243A4B";
     gradB = this.getAttribute("grad-b") || "#386370";
@@ -72,14 +72,166 @@ export class RdxWebchat  extends HTMLElement {
             this.open=false;
         } else if (this.open===false) {
             e.preventDefault();
-            //if (this.online===false){this.openSocket()};
+            if (this.online===false){this.openSocket()};
             this.botSuport.classList.add('bot-open');
             this.botButton.children[0].innerHTML = this.icons.isClicked;
             this.open=true;
         }
     }
 
-      connectedCallback() {
+    appendMessage(msg, botMessages){
+        const item = document.createElement('div')
+        item.innerHTML = msg
+        if (this.showTime===true){
+            const itemTime = document.createElement('span')
+            const d = new Date()
+            itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+            item.appendChild(itemTime) 
+        }
+        item.classList.add('messages-item', 'is-client')
+        botMessages.insertBefore(item, botMessages.children[0])
+        botMessages.scrollTop = botMessages.scrollHeight
+    }
+
+    appendResponse(response, botMessages){
+        var md = new Remarkable()
+        const item = document.createElement('div');
+        item.classList.add('messages-item', 'is-bot');
+        if (response['text']!==undefined){
+            let msg = md.render(response.text)
+            item.innerHTML = msg
+        }
+        if (response['attachment']!==undefined){
+            if (response['attachment']['type']==='image'){
+                const img = document.createElement('img')
+                img.src = response['attachment']['payload']['src']
+                item.appendChild(img)                                
+            }
+            if (response['attachment']['type']==='video'){
+                if (response['attachment']['payload']['src'].includes('https://www.youtube.com/')){
+                    console.log(response['attachment']['payload']['src'])
+                    console.log(response['attachment']['payload']['src'].replace('watch', 'embebed'))
+                    const video = document.createElement('div')
+                    video.classList.add('messages-video')
+                    video.innerHTML = /*html*/`
+                        <iframe width="560" height="315" src="${response['attachment']['payload']['src'].replace('watch', 'embebed')}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+                    item.appendChild(video)
+                } else {
+                    const video = document.createElement('video')
+                    video.src = response['attachment']['payload']['src']
+                    item.appendChild(video)
+                }                
+            }
+            if (response['custom']!==undefined){
+                if (response['custom']['content_type']==='image'){
+                    item.innerHTML = /*html*/`
+                    <img src="${response['custom']['payload']['src']}"/>
+                    <h1>${response['custom']['payload']['title']}</h1>
+                    ${response['custom']['payload']['description']!==undefined?`<p>${response['custom']['payload']['description']}</p>`:""}
+                `
+                }
+                if (response['custom']['content_type']==='location'){
+                    mapboxgl.accessToken = "pk.eyJ1IjoiYW50b25pb2ZyZWdvc28iLCJhIjoiY2t2NnZsYjRtMjJ0NjJxbXMwN2g1ajg5YyJ9.pD7yaooCH5IqBdc4jftIrA"
+                    const map = new mapboxgl.Map({
+                        container: item,
+                        //style: 'mapbox://styles/mapbox/streets-v11', 
+                        enter: [-99.21646907316129, 19.29342060773046]
+                    })
+                }
+
+            }
+            if (response['quick_replies']!==undefined){
+                item.classList.remove('is-bot')
+                item.classList.add("messages-quick-replies")
+                const buttonsContainer = document.createElement('div')
+                response['quick_replies'].forEach(quickReply => {
+                    const quickReplyButton = document.createElement('button')
+                    quickReplyButton.innerHTML = quickReply.title
+                    quickReplyButton.classList.add("button")
+                    quickReplyButton.addEventListener("click", e => {
+                        const quickReplyItem = document.createElement('div')
+                        quickReplyItem.innerHTML = quickReply.title
+                        const itemTime = document.createElement('span')
+                        const d = new Date()
+                        itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+                        quickReplyItem.appendChild(itemTime) 
+                        quickReplyItem.classList.add('messages-item', 'is-client')
+                        botMessages.insertBefore(quickReplyItem, botMessages.children[0])
+                        botMessages.scrollTop = botMessages.scrollHeight
+                        quickReplyItem.remove()
+                        this.socket.emit('user_uttered', {
+                            "message": quickReply.payload,
+                        })
+                    })
+                    buttonsContainer.appendChild(quickReplyButton)
+                })
+                item.appendChild(buttonsContainer)
+            } 
+        }
+        if (this.showTime===true){
+            const itemTime = document.createElement('span')             
+            const d = new Date()
+            itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
+            item.appendChild(itemTime)
+        }
+        console.log('Item', item)
+        botMessages.insertBefore(item, botMessages.children[0])
+        botMessages.scrollTop = botMessages.scrollHeight  
+    }
+
+    #getSessionId(){
+        const cDecoded = decodeURIComponent(document.cookie)
+        const cArr = cDecoded .split('; ')
+        var uuid
+        cArr.forEach(val => {
+            if (val.indexOf('uuid=') === 0) uuid = val.substring('uuid='.length)
+        })
+        if (uuid===undefined){
+            uuid = crypto.randomUUID()
+            let date = new Date()
+            date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000))
+            const expires = "expires=" + date.toUTCString()
+            document.cookie = "uuid=" + uuid + ", " + expires + ", path=/ ; SameSite=None; Secure"
+        }
+        return uuid
+    }
+
+    openSocket(){
+        this.uuid = this.#getSessionId()
+        var socket = io(this.websocketUrl, { autoConnect: true})
+        socket.on('connect',()=>{
+            console.log('SOCKET: connected to the socket server', socket.connected, this.uuid) 
+            socket.emit('session_request', { session_id: this.uuid })
+            if (this.initialPayload != '/'){
+                socket.emit('user_uttered', {
+                  "session_id": this.uuid, 
+                  "message": this.initialPayload,
+                });
+                console.log('sendig payload')
+              };
+            this.setAttribute('online',true)
+        })
+        socket.on('error', (err) => {
+            console.log('SOCKET: errors', err)
+            this.setAttribute('online',false)
+        })
+        socket.on('connect_error', (error) => {
+            console.log('SOCKET: connect_error ---->', error)
+            this.setAttribute('online',false)
+        })
+
+        socket.on('disconnect', (reason) => {
+            console.log(reason)
+          })
+        
+        socket.on('bot_uttered', (response) =>{
+            console.log(response)
+            this.appendResponse(response, this.botMesagges)
+        })
+        this.socket = socket
+    }
+
+    connectedCallback() {
         this.shadowRoot.innerHTML =/*html*/ `
         <style>            
             .bot-container {
@@ -109,6 +261,9 @@ export class RdxWebchat  extends HTMLElement {
                 transform: translateY(-40px);
                 z-index: 123456;
                 opacity: 1;
+            }
+            .bot-close {
+                display: none;
             }
             .bot-button {
                 text-align: right;
@@ -210,13 +365,13 @@ export class RdxWebchat  extends HTMLElement {
                 font-style: italic;
                 color:inherit;
             }
-            .messages-item span{
-                font-size: 0.7em;
-                display:${(this.showTime=='true')?'block':'none'};
-                text-align: right;
-            }
             .messages-item h1 {
                 font-size: 1.0em;
+            }
+
+            .messages-item span {
+                display: block;
+                font-size: 0.7em;
             }
             .is-client {
                 margin-left: auto;
@@ -235,8 +390,8 @@ export class RdxWebchat  extends HTMLElement {
             }
             .typing {
                 position: relative;
-              }
-              .typing__dot {
+                }
+                .typing__dot {
                 float: left;
                 width: 8px;
                 height: 8px;
@@ -245,30 +400,30 @@ export class RdxWebchat  extends HTMLElement {
                 border-radius: 50%;
                 opacity: 0;
                 animation: loadingFade 1s infinite;
-              }              
-              .typing__dot:nth-child(1) {
+                }              
+                .typing__dot:nth-child(1) {
                 animation-delay: 0s;
-              }              
-              .typing__dot:nth-child(2) {
+                }              
+                .typing__dot:nth-child(2) {
                 animation-delay: 0.2s;
-              }              
-              .typing__dot:nth-child(3) {
+                }              
+                .typing__dot:nth-child(3) {
                 animation-delay: 0.4s;
-              }
-              @keyframes loadingFade {
+                }
+                @keyframes loadingFade {
                 0% {
-                  opacity: 0;
-                  transform: translateY(0px);
+                    opacity: 0;
+                    transform: translateY(0px);
                 }
                 50% {
-                  opacity: 0.8;
-                  transform: translateY(8px);
+                    opacity: 0.8;
+                    transform: translateY(8px);
                 }
                 100% {
-                  opacity: 0;
-                  transform: translateY(0px);
+                    opacity: 0;
+                    transform: translateY(0px);
                 }
-              }
+                }
             .bot-footer {
                 position: sticky;
                 bottom: 0;
@@ -305,7 +460,7 @@ export class RdxWebchat  extends HTMLElement {
                 transform: translatex(4px);
             }
         </style>
-         <div class="bot-container">
+            <div class="bot-container">
             <div class="bot-suport">
                 <div class="bot-header">
                     <div class="bot-header-image">
@@ -338,14 +493,15 @@ export class RdxWebchat  extends HTMLElement {
         this.bootImput = this.shadowRoot.querySelector('form.bot-footer input');
         this.emojisButton = this.shadowRoot.querySelector('form.bot-footer span');
         this.botButton = this.shadowRoot.querySelector('.bot-button');
-        let botMesaggesHeight = this.botSuport.offsetHeight - this.botHeader.offsetHeight - this.botFooter.offsetHeight
-        this.botMesagges.style.height = botMesaggesHeight.toString()+'px'
+        let botMesaggesHeight = this.botSuport.offsetHeight - this.botHeader.offsetHeight - this.botFooter.offsetHeight;
+        this.botMesagges.style.height = botMesaggesHeight.toString()+'px';
         if (this.isOpen=='open'){
             this.botSuport.classList.add('bot-open');
+            this.botSuport.classList.remove('bot-close')
             this.botButton.children[0].innerHTML = this.icons.isClicked;
             this.open = true;
-            //if (this.onLine===false){this.openSocket()}
-        };       
+            if (this.onLine===false){this.openSocket()}
+        };     
         this.botFooter.addEventListener('submit',e=>{
             e.preventDefault();
             const msg =  this.bootImput.value;
@@ -395,12 +551,14 @@ export class RdxWebchat  extends HTMLElement {
             this.bootImput.value = this.bootImput.value.concat(e.emoji);
         })
         this.botButton.addEventListener('click', e => this.toogleOpen(e));
-        open = this.open;   
-      }
+        open = this.open;  
 
-      disconnectedCallback() {
 
-      }
+    }
+
+    disconnectedCallback() {
+        this.botFooter.removeEventListener('submit');
+    }
 
 }
 
