@@ -109,8 +109,6 @@ export class RdxWebchat  extends HTMLElement {
             }
             if (response['attachment']['type']==='video'){
                 if (response['attachment']['payload']['src'].includes('https://www.youtube.com/')){
-                    console.log(response['attachment']['payload']['src'])
-                    console.log(response['attachment']['payload']['src'].replace('watch', 'embebed'))
                     const video = document.createElement('div')
                     video.classList.add('messages-video')
                     video.innerHTML = /*html*/`
@@ -174,7 +172,6 @@ export class RdxWebchat  extends HTMLElement {
             itemTime.textContent =d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
             item.appendChild(itemTime)
         }
-        console.log('Item', item)
         botMessages.insertBefore(item, botMessages.children[0])
         botMessages.scrollTop = botMessages.scrollHeight  
     }
