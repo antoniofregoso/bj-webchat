@@ -1,0 +1,23 @@
+{
+  "name": "bj-webchat",
+  "version": "1.0.0",
+  "description": "Web Component to connect to the Rasa conversational chatbot version 3.1 or later. ## Features 1. Text Messages. 2. Quick Replies. 3. Images. 4. Markdown support. 5. Persistent sessions. 6. Easily configurable colors. 9. Emojis in basic and extended format. 10. Adapts to mobile devices automatically. 11. User interface automatically adapts to 5 languages. 12. Typing indications. 13. Smart delay between messages. 14. Does not require link to css style sheet.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antoniofregoso/bj-webchat.git"
+  },
+  "author": "Antonio Fregoso <antoniofregoso@protonmail.com>",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "esbuild": "^0.19.4"
+  },
+  "dependencies": {
+    "@picmo/popup-picker": "^5.8.5",
+    "remarkable": "^2.0.1",
+    "socket.io-client": "^4.7.2"
+  }
+}
