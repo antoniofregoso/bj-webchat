@@ -10,7 +10,7 @@ import { createPopup } from '@picmo/popup-picker';
 import { es, pt, fr, de, imputMessage } from './i18n';
 import  mapboxgl  from 'mapbox-gl';
 
-export class RdxWebchat  extends HTMLElement {
+export class RasaWebchat  extends HTMLElement {
 
     isOpen = this.getAttribute("is-open") || false;
     websocketUrl = this.getAttribute("websocket-url") || "http://0.0.0.0:5005";
@@ -559,4 +559,4 @@ export class RdxWebchat  extends HTMLElement {
 
 }
 
-customElements.define("rdx-webchat", RdxWebchat);
+customElements.define("rasa-webchat", RasaWebchat);
